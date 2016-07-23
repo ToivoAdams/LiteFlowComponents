@@ -27,6 +27,11 @@ public class TestTableBuilder {
         final Connection con = getConnection();
         Statement stmt = con.createStatement();
         
+        try {
+            stmt.execute("drop table Customer");
+        } catch (final SQLException sqle) {
+        }
+        
         stmt.execute("create table Customer (name varchar(40), email varchar(40), phone	varchar(40), address varchar(60), city varchar(40))");
 
         stmt.execute("insert into Customer (name, email, phone, address, city) VALUES ('Bob Wollis', '', '54675 78969' , '639 Main St', 'Alabama')");

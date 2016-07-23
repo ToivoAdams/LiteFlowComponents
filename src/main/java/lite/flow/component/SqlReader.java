@@ -15,15 +15,15 @@
  */
 package lite.flow.component;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import lite.data.table.Table;
@@ -66,20 +66,22 @@ public class SqlReader {
 		this.database = database;
 	}
 
-	public Table read(Map<String,Object> sqlParams) throws SQLException {
+	public Table read(Map<String,?> sqlParams) throws SQLException {
+
+		JdbcTemplate template = new JdbcTemplate(database);
+		template.setQueryTimeout(queryTimeout);
+		NamedParameterJdbcTemplate named = new NamedParameterJdbcTemplate(template);
 		
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(database);
-		
-		try (Connection con = database.getConnection()) {
-			try (PreparedStatement stmt = con.prepareStatement(sqlSelect)) {
-				stmt.setQueryTimeout(queryTimeout);
-		//		stmt.set
-		        ResultSet rs = stmt.executeQuery(sqlSelect);
-		        Table data = TableBuilder.toTable(rs, 5000);
-		        return data;
-			}
-		}
-		
+		Table data = named.query(sqlSelect, sqlParams, new TableExtractor());
+		return data;
 	}
 
+	class TableExtractor implements ResultSetExtractor<Table> {
+
+		@Override
+		public Table extractData(ResultSet rs) throws SQLException, DataAccessException {
+	        Table data = TableBuilder.toTable(rs, maxRows);
+	        return data;
+		}
+	}
 }
