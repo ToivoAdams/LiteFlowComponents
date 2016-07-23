@@ -5,7 +5,7 @@ LiteFlowComponents contains common components.
 <br>
 ![LiteFlowApi](../../../LiteFlowApi) contains API for activities and flows creation.
 <br>
-![LiteFlowKiss](../../../LiteFlowApi) contains simple runtime for LiteFlow.
+![LiteFlowKiss](../../../LiteFlowKiss) contains simple runtime for LiteFlow.
 <br>
 
 ![ExampleFlow](../../../LiteFlowApi/tree/master/docs/images/ConvertAddNumbersFlow.png)
